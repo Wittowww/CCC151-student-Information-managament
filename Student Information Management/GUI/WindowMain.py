@@ -36,6 +36,7 @@ class mainApp(QMainWindow):
 
         #upper bar
         upperBar = QHBoxLayout()
+        
         #left side bar(due to QV)
         sideBar = QVBoxLayout()
 
@@ -48,7 +49,6 @@ class mainApp(QMainWindow):
         upperBar.addWidget(self.button_students)
         upperBar.addWidget(self.button_colleges)
         upperBar.addWidget(self.button_programs)
-        upperBar.addStretch()
         #Button actions 
         self.button_students.clicked.connect(self.show_studentTable)
         self.button_colleges.clicked.connect(self.show_collegeTable)

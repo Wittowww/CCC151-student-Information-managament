@@ -1,14 +1,14 @@
 import csv
 import os 
 
-baseDIR = os.path.dirname(os.path.abspath(__file__))
+baseDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                           
 student_File = os.path.join(baseDIR, "Data", "students.csv")
 college_File = os.path.join(baseDIR, "Data", "colleges.csv")
 program_File = os.path.join(baseDIR, "Data", "programs.csv")
 
 #headers
-student_Fields = ["Student ID" , "Last Name","First Name","Gender","Program","Year"]
+student_Fields = ["Student ID" , "Last Name", "First Name", "Gender", "Program", "Year"]
 college_Fields = ["College Code", "College Name"]
 program_Fields = ["Program Code", "Program Name", "College Code"]
 
@@ -45,8 +45,8 @@ def add_college(college: dict):
 def update_college(updated: dict):
     colleges = load_colleges()
     found = False
-    for i, colleges in enumerate(colleges):
-        if colleges["College Code"] == updated["College Code"]:
+    for i, college in enumerate(colleges):
+        if college["College Code"] == updated["College Code"]:
             colleges[i] = updated
             found = True
             break
@@ -71,6 +71,8 @@ def delete_college(college_code: str):
     for student in student:
         if student["Program"] in delete_programCode:
             student["Program"] = "N/A"
+    save_students(student)
+    
     save_colleges(colfiltered)
     return True
 
@@ -120,8 +122,8 @@ def update_program(updated: dict):
     programs = load_programs()
     found = False
 
-    for i, programs in enumerate(programs):
-        if programs["Program Code"] == updated["Program Code"]:
+    for i, program in enumerate(programs):
+        if program["Program Code"] == updated["Program Code"]:
             programs[i] = updated
             found = True
             break
@@ -180,8 +182,8 @@ def add_student(student: dict):
 def update_student(updated: dict):
     students = load_students()
     found = False
-    for i, students in enumerate(students):
-        if students["Student ID"] == updated["Student ID"]:
+    for i, student in enumerate(students):
+        if student["Student ID"] == updated["Student ID"]:
             students[i] = updated
             found = True
             break

@@ -9,7 +9,7 @@ class AddStudentDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Add Student")
-        self.setFixedSize(500, 600)
+        self.setFixedSize(500, 300)
         self.setup_ui()
         self.show()
 
@@ -21,12 +21,14 @@ class AddStudentDialog(QDialog):
         self.studentID_input = QLineEdit()
         self.studentFirstName_input = QLineEdit()
         self.studentLastName_input = QLineEdit()
-        self.studentGender_input = QLineEdit()
         self.studentYear_input = QLineEdit()
+
+        self.studentGender_input = QComboBox()
+        self.studentGender_input.addItems(["Select Gender", "Female", "Male"])
 
         #Drop Down Box for Program (already has all the added programs)
         self.program_input = QComboBox()
-        self.load_programs()
+        self.load_Programs()
 
         #Input Boxes
         student_Form.addRow("Student ID:", self.studentID_input)
@@ -65,12 +67,12 @@ class AddStudentDialog(QDialog):
             "Student ID": self.studentID_input.text().strip(),
             "First Name": self.studentFirstName_input.text().strip(),
             "Last Name": self.studentLastName_input.text().strip(),
-            "Gender": self.studentGender_input.text().strip(),
+            "Gender": self.studentGender_input.currentData(),
             "Year": self.studentYear_input.text().strip(),
             "Program": self.program_input.currentData()
         }
 
-        if any(v.strip() == "" for v in (students.values())[:-1]):
+        if any (v == "" for v in list(students.values())[:-1]):
             QMessageBox.warning(self, "Input Error", "Please fill in all fields.")
             return
 
