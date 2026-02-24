@@ -85,7 +85,7 @@ class AddStudentDialog(QDialog):
             self.program_input.addItem("No programs found", "")
             return
 
-        self.program_input.addItem("Select Program", "")
+        self.program_input.addItem("Select Program", "Select Program")
         for program in filtered:
             self.program_input.addItem(
                 f"{program['Program Code']} - {program['Program Name']}",
@@ -115,7 +115,7 @@ class AddStudentDialog(QDialog):
         if self.studentGender_input.currentText() == "Select Gender":
             QMessageBox.warning(self, "Input Error", "Please select a valid Gender.")
             return
-        
+
         if self.program_input.currentData() == "Select Program":
             QMessageBox.warning(self, "Input Error", "Please select a Program.")
             return
