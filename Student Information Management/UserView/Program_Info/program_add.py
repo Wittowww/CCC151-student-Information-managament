@@ -43,6 +43,7 @@ class AddProgramDialog(QDialog):
     def load_colleges(self):
         colleges = load_colleges()
         self.college_input.clear()
+        self.college_input.addItem("Select College", "Select College")
         for college in colleges:
             self.college_input.addItem(
                 college["College Name"],

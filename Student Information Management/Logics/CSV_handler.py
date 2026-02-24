@@ -8,7 +8,7 @@ college_File = os.path.join(baseDIR, "Data", "colleges.csv")
 program_File = os.path.join(baseDIR, "Data", "programs.csv")
 
 #headers
-student_Fields = ["Student ID" , "Last Name", "First Name", "Gender", "Program", "Year"]
+student_Fields = ["Student ID" , "Last Name", "First Name", "Gender", "Program Code", "Year"]
 college_Fields = ["College Code", "College Name"]
 program_Fields = ["Program Code", "Program Name", "College Code"]
 
@@ -69,8 +69,8 @@ def delete_college(college_code: str):
 
     student = load_students()
     for student in student:
-        if student["Program"] in delete_programCode:
-            student["Program"] = "N/A"
+        if student["Program Code"] in delete_programCode:
+            student["Program Code"] = "N/A"
     save_students(student)
     
     save_colleges(colfiltered)
@@ -142,8 +142,8 @@ def delete_program(program_code: str):
     
     students =load_students()
     for student in students:
-        if student["Program"] == program_code:
-            student["Program"] = "N/A"
+        if student["Program Code"] == program_code:
+            student["Program Code"] = "N/A"
     save_students(students)
 
     save_programs(profiltered)

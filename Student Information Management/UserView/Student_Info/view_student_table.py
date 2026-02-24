@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QTableWidget,
-    QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox
+    QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
 )
 from Logics.CSV_handler import load_students, delete_student
 
@@ -33,15 +32,19 @@ class StudentTable(QWidget):
         layout.addLayout(btnLayout)
 
         self.table = QTableWidget()
-        self.table.setColumnCount(7)
+        self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels([
             "Student ID", 
-            "First Name", 
             "Last Name", 
+            "First Name", 
             "Gender", 
             "Program", 
             "Year"
         ])
+
+        self.table.setColumnWidth(1, 200)
+        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
+        self.table.setColumnWidth(5, 50)
 
         self.table.itemClicked.connect(self.on_row_clicked)
 
@@ -57,12 +60,12 @@ class StudentTable(QWidget):
         students = load_students()
         self.table.setRowCount(len(students))
         for row_idx, student in enumerate(students):
-            self.table.setItem(row_idx, 0, QTableWidgetItem(student["student_id"]))
-            self.table.setItem(row_idx, 1, QTableWidgetItem(student["first name"]))
-            self.table.setItem(row_idx, 2, QTableWidgetItem(student["last name"]))
-            self.table.setItem(row_idx, 3, QTableWidgetItem(student["gender"]))
-            self.table.setItem(row_idx, 4, QTableWidgetItem(student["program_id"]))
-            self.table.setItem(row_idx, 6, QTableWidgetItem(student["year"]))
+            self.table.setItem(row_idx, 0, QTableWidgetItem(student["Student ID"]))
+            self.table.setItem(row_idx, 1, QTableWidgetItem(student["First Name"]))
+            self.table.setItem(row_idx, 2, QTableWidgetItem(student["Last Name"]))
+            self.table.setItem(row_idx, 3, QTableWidgetItem(student["Gender"]))
+            self.table.setItem(row_idx, 4, QTableWidgetItem(student["Program Code"]))
+            self.table.setItem(row_idx, 5, QTableWidgetItem(student["Year"]))
 
         self.delete_btn.hide()
         self.edit_btn.hide()
@@ -77,8 +80,8 @@ class StudentTable(QWidget):
         student_id = self.table.item(selected_row, 0).text()
 
         confirm = QMessageBox.question(
-            self, "Delete",
-            f"Are you sure you want to delete {student_id}?"
+            self, "Delete Student",
+            f"Are you sure you want to delete <b>{student_id}<b>?<br><br>"
         )
 
         if confirm == QMessageBox.Yes:

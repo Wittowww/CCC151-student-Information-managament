@@ -43,24 +43,21 @@ class EditProgramDialog(QDialog):
         self.setLayout(layout)
 
     def load_colleges(self):
-        """loads all colleges into the dropdown"""
         colleges = load_colleges()
         self.college_input.clear()
         for college in colleges:
             self.college_input.addItem(
-                college["College Name"],   # text shown
-                college["College Code"]    # value stored
+                college["College Name"],  
+                college["College Code"]    
             )
 
     def load_program_data(self):
-        """pre fills the form with existing program data"""
         program = get_program(self.program_id)
 
         if program:
             self.programCode_input.setText(program["Program Code"])
             self.programName_input.setText(program["Program Name"])
 
-            # set dropdown to current college
             index = self.college_input.findData(program["College Code"])
             if index >= 0:
                 self.college_input.setCurrentIndex(index)

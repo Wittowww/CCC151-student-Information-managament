@@ -23,6 +23,7 @@ class AddStudentDialog(QDialog):
         self.studentLastName_input = QLineEdit()
         self.studentYear_input = QLineEdit()
 
+        #Drop Down for Gender
         self.studentGender_input = QComboBox()
         self.studentGender_input.addItems(["Select Gender", "Female", "Male"])
 
@@ -32,8 +33,8 @@ class AddStudentDialog(QDialog):
 
         #Input Boxes
         student_Form.addRow("Student ID:", self.studentID_input)
-        student_Form.addRow("First Name:", self.studentFirstName_input)
         student_Form.addRow("Last Name:", self.studentLastName_input)
+        student_Form.addRow("First Name:", self.studentFirstName_input)
         student_Form.addRow("Gender:", self.studentGender_input)
         student_Form.addRow("Year:", self.studentYear_input)
         student_Form.addRow("Program:", self.program_input)
@@ -55,7 +56,7 @@ class AddStudentDialog(QDialog):
     def load_Programs(self):
         programs = load_programs()
         self.program_input.clear()
-        self.program_input.addItem("N/A", "N/A")
+        self.program_input.addItem("Select Program", "Select Program")
         for program in programs:
             self.program_input.addItem(
                 program["Program Name"],
@@ -65,12 +66,20 @@ class AddStudentDialog(QDialog):
     def submit_student(self):
         students = {
             "Student ID": self.studentID_input.text().strip(),
-            "First Name": self.studentFirstName_input.text().strip(),
             "Last Name": self.studentLastName_input.text().strip(),
-            "Gender": self.studentGender_input.currentData(),
+            "First Name": self.studentFirstName_input.text().strip(),
+            "Gender": self.studentGender_input.currentText(),
             "Year": self.studentYear_input.text().strip(),
-            "Program": self.program_input.currentData()
+            "Program Code": self.program_input.currentData()
         }
+
+        if self.studentGender_input.currentText() == "Select Gender":
+            QMessageBox.warning(self, "Input Error", "Please select a valid Gender.")
+            return
+        
+        if self.program_input.currentData() == "Select Program":
+            QMessageBox.warning(self, "Input Error", "Please select a Program.")
+            return
 
         if any (v == "" for v in list(students.values())[:-1]):
             QMessageBox.warning(self, "Input Error", "Please fill in all fields.")
@@ -83,9 +92,9 @@ class AddStudentDialog(QDialog):
 
     def clear_inputs(self):
             self.studentID_input.clear()
-            self.studentFirstName_input.clear()
             self.studentLastName_input.clear()
-            self.studentGender_input.clear()
+            self.studentFirstName_input.clear()
+            self.studentGender_input.setCurrentIndex(0)
             self.studentYear_input.clear()
             self.program_input.setCurrentIndex(0)
 

@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QTableWidget,
-    QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox
+    QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
 )
 from Logics.CSV_handler import load_programs, delete_program
 
@@ -35,10 +34,13 @@ class ProgramTable(QWidget):
         self.table = QTableWidget()
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels([
+            "College Code",
             "Program Code", 
-            "Program Name", 
-            "College Code"
+            "Program Name"
+            
         ])
+
+        self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
 
         self.table.itemClicked.connect(self.on_row_clicked)
 
@@ -54,9 +56,9 @@ class ProgramTable(QWidget):
         programs = load_programs()
         self.table.setRowCount(len(programs))
         for row_idx, program in enumerate(programs):
-            self.table.setItem(row_idx, 0, QTableWidgetItem(program["Program Code"]))
-            self.table.setItem(row_idx, 1, QTableWidgetItem(program["Program Name"]))
-            self.table.setItem(row_idx, 2, QTableWidgetItem(program["College Code"]))
+            self.table.setItem(row_idx, 0, QTableWidgetItem(program["College Code"]))
+            self.table.setItem(row_idx, 1, QTableWidgetItem(program["Program Code"]))
+            self.table.setItem(row_idx, 2, QTableWidgetItem(program["Program Name"]))
 
         self.delete_btn.hide()
         self.edit_btn.hide()
@@ -68,11 +70,11 @@ class ProgramTable(QWidget):
             QMessageBox.warning(self, "Error", "Please select a program to delete.")
             return
 
-        program_id = self.table.item(selected_row, 0).text()
+        program_id = self.table.item(selected_row, 1).text()
 
         confirm = QMessageBox.question(
-            self, "Delete",
-            f"Are you sure you want to delete {program_id}?"
+            self, "Delete Program",
+            f"Are you sure you want to delete <b>{program_id}<b>?<br><br>"
         )
 
         if confirm == QMessageBox.Yes:
@@ -90,9 +92,9 @@ class ProgramTable(QWidget):
             QMessageBox.warning(self, "Error", "Please select a program to edit.")
             return
 
-        program_id = self.table.item(selected_row, 0).text()
+        program_code = self.table.item(selected_row, 1).text()
 
         from UserView.Program_Info.program_edit import EditProgramDialog
-        dialog = EditProgramDialog(program_id, self)
+        dialog = EditProgramDialog(program_code, self)
         dialog.exec()
         self.load_table()
