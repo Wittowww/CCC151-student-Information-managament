@@ -1,0 +1,76 @@
+CRUDL one of the needed :P
+- create (add student, collegec program)
+- read (view " " ")
+- update (Edit " " ")
+- delete 
+- list (data table)
+
+Notes: 
+
+""" 
+        # Buttons for side bar frfr
+        self.button_addStudent = QPushButton("Add Student")
+        self.button_addProgram = QPushButton("Add Program")
+        self.button_addCollege = QPushButton("Add College")
+        #buttonc actions :P
+        self.button_addStudent.clicked.connect(self.popup_addStudent)
+        self.button_addProgram.clicked.connect(self.popup_addProgram)
+        self.button_addCollege.clicked.connect(self.popup_addCollege)
+        rgb(32, 119, 119) button to side bar
+        sideBar.addWidget(self.button_addStudent)
+        sideBar.addWidget(self.button_addProgram)
+        sideBar.addWidget(self.button_addCollege)
+        sideBar.addStretch()
+
+
+        right_widget = QWidget()
+        right_layout = QHBoxLayout(right_widget)
+
+        right_layout.setContentsMargins(5, 0, 5, 0)
+        right_layout.setSpacing(10) # Space between buttons
+
+        self.Button_Add = QPushButton("Add")
+        self.Button_Edit = QPushButton("Edit")
+
+    # Style them to blend into the menu bar (no borders)
+        for button in [self.Button_Add, self.Button_Edit]:
+            button.setFlat(True)
+            button.setMinimumWidth(60)
+            button.setCursor(Qt.PointingHandCursor) # Change cursor to hand on hover
+            right_layout.addWidget(button)
+
+        self.Button_Add.clicked.connect(self.handle_add_context)
+
+        menu_bar.setCornerWidget(right_widget)
+
+
+        
+    # menu Bar for Addition (may continue or not)
+    def MenuBar_setup(self):
+        menu_bar = self.menuBar()
+
+        file_menu = menu_bar.addMenu("File")
+        exit_action = file_menu.addAction("Exit")
+        exit_action.triggered.connect(self.close)
+
+        right_widget = QWidget()
+        right_layout = QHBoxLayout(right_widget)
+
+        right_layout.setContentsMargins(5, 0, 5, 0)
+        right_layout.setSpacing(10) # Space between buttons
+
+        self.Button_Add = QPushButton("Add")
+        self.Button_Edit = QPushButton("Edit")
+
+    # Style them to blend into the menu bar (no borders)
+        for button in [self.Button_Add, self.Button_Edit]:
+            button.setFlat(True)
+            button.setMinimumWidth(60)
+            button.setCursor(Qt.PointingHandCursor) # Change cursor to hand on hover
+            right_layout.addWidget(button)
+
+        self.Button_Add.clicked.connect(self.handle_add_context)
+
+        menu_bar.setCornerWidget(right_widget)
+
+"""
