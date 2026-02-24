@@ -2,14 +2,14 @@ from PySide6.QtWidgets import (
     QDialog, QLineEdit, QVBoxLayout, QPushButton, QFormLayout, QLabel, QMessageBox, QComboBox
 )
 
-from Logics.CSV_handler import add_student, load_programs
+from Logics.CSV_handler import add_student, load_programs, load_colleges
 
 #for now
 class AddStudentDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Add Student")
-        self.setFixedSize(500, 300)
+        self.setFixedSize(500, 400)
         self.setup_ui()
         self.show()
 
@@ -27,6 +27,11 @@ class AddStudentDialog(QDialog):
         self.studentGender_input = QComboBox()
         self.studentGender_input.addItems(["Select Gender", "Female", "Male"])
 
+        #Dropd Down for College
+        self.college_input = QComboBox()
+        self.load_colleges()
+        self.college_input.currentIndexChanged.connect(self.filter_programs)
+
         #Drop Down Box for Program (already has all the added programs)
         self.program_input = QComboBox()
         self.load_Programs()
@@ -37,6 +42,7 @@ class AddStudentDialog(QDialog):
         student_Form.addRow("First Name:", self.studentFirstName_input)
         student_Form.addRow("Gender:", self.studentGender_input)
         student_Form.addRow("Year:", self.studentYear_input)
+        student_Form.addRow("College:", self.college_input)
         student_Form.addRow("Program:", self.program_input)
 
         layout.addLayout(student_Form)
@@ -52,6 +58,39 @@ class AddStudentDialog(QDialog):
         layout.addWidget(self.student_cancelButton)
 
         self.setLayout(layout)
+
+    def load_colleges(self):
+        colleges = load_colleges()
+        self.college_input.clear()
+        self.college_input.addItem("Select College", "Select College")
+        for college in colleges:
+            self.college_input.addItem(
+                f"{college['College Code']} - {college['College Name']}",
+                college["College Code"]
+            )
+
+    def filter_programs(self):
+        selected_college_code = self.college_input.currentData()
+        programs = load_programs()
+
+        self.program_input.clear()
+
+        if not selected_college_code:
+            self.program_input.addItem("Select College first", "")
+            return
+
+        filtered = [p for p in programs if p["College Code"] == selected_college_code]
+
+        if not filtered:
+            self.program_input.addItem("No programs found", "")
+            return
+
+        self.program_input.addItem("Select Program", "")
+        for program in filtered:
+            self.program_input.addItem(
+                f"{program['Program Code']} - {program['Program Name']}",
+                program["Program Code"]
+            )
 
     def load_Programs(self):
         programs = load_programs()
@@ -97,4 +136,5 @@ class AddStudentDialog(QDialog):
             self.studentGender_input.setCurrentIndex(0)
             self.studentYear_input.clear()
             self.program_input.setCurrentIndex(0)
+            self.college_input.setCurrentIndex(0)
 

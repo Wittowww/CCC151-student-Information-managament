@@ -1,8 +1,14 @@
+import os
+
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget, QLabel, QLineEdit, QComboBox
 )
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtCore import Qt
+
+from GUI.GUIlook import WIN98_STYLE
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 #Dialog imports
 from UserView.Student_Info.student_add import AddStudentDialog
@@ -16,11 +22,36 @@ from UserView.Program_Info.view_program_table import ProgramTable
 
 
 class mainApp(QMainWindow):
+
+    SORT_OPTIONS = {
+    0: [  # Student Table
+        ("Sort by Student ID",   0),
+        ("Sort by Last Name",    1),
+        ("Sort by First Name",   2),
+        ("Sort by Gender",       3),
+        ("Sort by Program Code", 4),
+        ("Sort by Year",         5),
+    ],
+    1: [  # College Table
+        ("Sort by College Code", 0),
+        ("Sort by College Name", 1),
+    ],
+    2: [  # Program Table
+        ("Sort by Program Code", 0),
+        ("Sort by Program Name", 1),
+        ("Sort by College Code", 2),
+    ],
+}
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Student Information Management System")
         self.setFixedSize(1200, 700)
-        self.setWindowIcon(QIcon("StudentInfo ICON.png"))
+        
+        icon_path = os.path.join(BASE_DIR, "StudentInfo ICON.png")
+        self.setWindowIcon(QIcon(icon_path))
+
+        self.setStyleSheet(WIN98_STYLE)
         
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -54,16 +85,28 @@ class mainApp(QMainWindow):
         #Search engine? Engine?!
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("Search...")
-        self.search_bar.setFixedWidth(200)
-        self.search_bar.textChanged.connect(self.handle_search)
+        self.search_button = QPushButton("Search")
+        self.search_button.clicked.connect(self.handle_search)
+        self.search_bar.returnPressed.connect(self.handle_search)  # Search on Enter key too
+
+        # Clear button to reset search
+        self.clear_button = QPushButton("Clear")
+        self.clear_button.clicked.connect(self.clear_search)
+
         upperBar.addWidget(self.search_bar)
+        upperBar.addWidget(self.search_button)
+        upperBar.addWidget(self.clear_button)
 
         #Sort
         self.sort_box = QComboBox()
-        self.sort_box.addItems(["Sort by ID", "Sort by Name"])
         self.sort_box.currentIndexChanged.connect(self.handle_sort)
         upperBar.addWidget(self.sort_box)
 
+        self.button_students.clicked.connect(self.update_sort_options)
+        self.button_colleges.clicked.connect(self.update_sort_options)
+        self.button_programs.clicked.connect(self.update_sort_options)
+
+        #ADD button (add data)
         self.button_Add = QPushButton("Add New")
         upperBar.addWidget(self.button_Add)
         self.button_Add.clicked.connect(self.handle_add_context)
@@ -77,6 +120,7 @@ class mainApp(QMainWindow):
 
         layout_main.addLayout(upperBar)
         layout_main.addWidget(self.stackTables)
+        self.update_sort_options()
 
     #for add Button, so it shows a certain dialog when a certain table is open
     def handle_add_context(self):
@@ -87,26 +131,45 @@ class mainApp(QMainWindow):
 
     #for Search huhuhuhu
     def handle_search(self):
-        query = self.search_bar.text().lower()
-    # Get the QTableWidget inside the current page of the QStackedWidget
-        current_table_widget = self.stackTables.currentWidget().table 
+        query = self.search_bar.text().strip().lower()
+        current_table_widget = self.stackTables.currentWidget().table
 
         for row in range(current_table_widget.rowCount()):
+        # If query is empty, show all rows
+            if not query:
+                current_table_widget.setRowHidden(row, False)
+                continue
+
             match = False
-            for col in range(current_table_widget.columnCount()):
+            for col in range(current_table_widget.columnCount()):  # ← inside for row
                 item = current_table_widget.item(row, col)
                 if item and query in item.text().lower():
                     match = True
                     break
-        current_table_widget.setRowHidden(row, not match)
 
-    #for sort AHHH
-    def handle_sort(self, index):
+            current_table_widget.setRowHidden(row, not match) 
+
+    def clear_search(self):
+        self.search_bar.clear()
+        self.handle_search()
+
+    def update_sort_options(self):
+        index = self.stackTables.currentIndex()
+        self.sort_box.blockSignals(True)  # Prevent sort from triggering while updating
+        self.sort_box.clear()
+        self.sort_box.addItems([label for label, _ in self.SORT_OPTIONS[index]])
+        self.sort_box.blockSignals(False)
+
+    def handle_sort(self, combo_index):
+        table_index = self.stackTables.currentIndex()
+        options = self.SORT_OPTIONS.get(table_index, [])
+
+        if combo_index < 0 or combo_index >= len(options):
+            return
+
+        _, col = options[combo_index]
         current_table_widget = self.stackTables.currentWidget().table
-        if index == 0:
-            current_table_widget.sortItems(0, Qt.AscendingOrder)
-        elif index == 1:
-            current_table_widget.sortItems(1, Qt.AscendingOrder)
+        current_table_widget.sortItems(col, Qt.AscendingOrder)
 
     #dialog functions for the add buttons
     def popup_addStudent(self):
