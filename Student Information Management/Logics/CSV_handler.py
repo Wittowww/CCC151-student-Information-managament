@@ -89,16 +89,11 @@ def delete_college(college_code: str):
         return False
     
     programs = load_programs()
-    delete_programCode = [p["Program Code"] for p in programs if p["College Code"] == college_code]
-    filtered_program = [p for p in programs if p["College Code"] != college_code]
-    save_programs(filtered_program)
+    for p in programs:
+        if p["College Code"] == college_code:
+            p["College Code"] = "N/A"
+    save_programs(programs)
 
-    students = load_students()
-    for student in students:
-        if student["Program Code"] in delete_programCode:
-            student["Program Code"] = "N/A"
-    save_students(students)
-    
     save_colleges(colfiltered)
     return True
 

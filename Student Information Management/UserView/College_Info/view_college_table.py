@@ -78,7 +78,6 @@ class CollegeTable(QWidget):
         confirm = QMessageBox.question(
             self, "Delete College", 
             f"Are you sure you want to delete <b>{college_code}</b>?<br><br>"
-            "<b>Warning:</b> Deleting this College will result to <b>Deleted Programs</b> under it."
         )
 
         if confirm == QMessageBox.Yes:
