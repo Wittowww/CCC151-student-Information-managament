@@ -1,20 +1,22 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
 )
+from PySide6.QtCore import Signal
 from Logics.CSV_handler import load_programs, delete_program
+from Logics.AppSignals import app_signals
 
 class ProgramTable(QWidget):
+    program_deleted = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
+        app_signals.data_changed.connect(self.load_table)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
 
         btnLayout = QHBoxLayout()
-
-        self.refresh_btn = QPushButton("Refresh")
-        self.refresh_btn.clicked.connect(self.load_table)
 
         self.delete_btn = QPushButton("Delete")
         self.delete_btn.clicked.connect(self.delete_selected)
@@ -24,7 +26,6 @@ class ProgramTable(QWidget):
         self.edit_btn.clicked.connect(self.edit_selected)
         self.edit_btn.hide()
 
-        btnLayout.addWidget(self.refresh_btn)
         btnLayout.addWidget(self.edit_btn)
         btnLayout.addWidget(self.delete_btn)
         btnLayout.addStretch()
@@ -74,7 +75,7 @@ class ProgramTable(QWidget):
 
         confirm = QMessageBox.question(
             self, "Delete Program",
-            f"Are you sure you want to delete <b>{program_id}<b>?<br><br>"
+            f"Are you sure you want to delete <b>{program_id}</b>?<br><br>"
         )
 
         if confirm == QMessageBox.Yes:
@@ -82,6 +83,8 @@ class ProgramTable(QWidget):
             if result:
                 QMessageBox.information(self, "Success", "Program deleted!")
                 self.load_table()
+                self.program_deleted.emit()
+                app_signals.data_changed.emit() 
             else:
                 QMessageBox.warning(self, "Error", "Program not found!")
 
@@ -96,5 +99,5 @@ class ProgramTable(QWidget):
 
         from UserView.Program_Info.program_edit import EditProgramDialog
         dialog = EditProgramDialog(program_code, self)
+        dialog.program_updated.connect(self.load_table)
         dialog.exec()
-        self.load_table()

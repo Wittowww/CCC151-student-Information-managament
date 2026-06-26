@@ -112,11 +112,18 @@ class mainApp(QMainWindow):
         self.button_Add.clicked.connect(self.handle_add_context)
 
         #Right content area (for the tables/list)
-        self.stackTables = QStackedWidget()
+        self.student_table = StudentTable()
+        self.college_table = CollegeTable()
+        self.program_table = ProgramTable()
 
-        self.stackTables.addWidget(StudentTable())
-        self.stackTables.addWidget(CollegeTable())
-        self.stackTables.addWidget(ProgramTable())
+        self.college_table.college_deleted.connect(self.program_table.load_table)
+        self.college_table.college_deleted.connect(self.student_table.load_table)
+        self.program_table.program_deleted.connect(self.student_table.load_table)
+
+        self.stackTables = QStackedWidget()
+        self.stackTables.addWidget(self.student_table) 
+        self.stackTables.addWidget(self.college_table) 
+        self.stackTables.addWidget(self.program_table) 
 
         layout_main.addLayout(upperBar)
         layout_main.addWidget(self.stackTables)
@@ -141,7 +148,7 @@ class mainApp(QMainWindow):
                 continue
 
             match = False
-            for col in range(current_table_widget.columnCount()):  # ← inside for row
+            for col in range(current_table_widget.columnCount()):
                 item = current_table_widget.item(row, col)
                 if item and query in item.text().lower():
                     match = True
@@ -155,7 +162,7 @@ class mainApp(QMainWindow):
 
     def update_sort_options(self):
         index = self.stackTables.currentIndex()
-        self.sort_box.blockSignals(True)  # Prevent sort from triggering while updating
+        self.sort_box.blockSignals(True) 
         self.sort_box.clear()
         self.sort_box.addItems([label for label, _ in self.SORT_OPTIONS[index]])
         self.sort_box.blockSignals(False)
@@ -174,14 +181,17 @@ class mainApp(QMainWindow):
     #dialog functions for the add buttons
     def popup_addStudent(self):
         popup_dialog = AddStudentDialog(self)
+        popup_dialog.student_added.connect(self.student_table.load_table)
         popup_dialog.exec()
 
     def popup_addCollege(self):
         popup_dialog = AddCollegeDialog(self)
+        popup_dialog.college_added.connect(self.college_table.load_table)
         popup_dialog.exec()
 
     def popup_addProgram(self):
         popup_dialog = AddProgramDialog(self)
+        popup_dialog.program_added.connect(self.program_table.load_table)
         popup_dialog.exec()
 
     #stack functions for the upper bar (tables)

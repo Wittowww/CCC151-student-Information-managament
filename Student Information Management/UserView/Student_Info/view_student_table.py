@@ -2,19 +2,18 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QTableWidget, QTableWidgetItem, QPushButton, QHBoxLayout, QMessageBox, QHeaderView
 )
 from Logics.CSV_handler import load_students, delete_student
+from Logics.AppSignals import app_signals
 
 class StudentTable(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
+        app_signals.data_changed.connect(self.load_table)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
 
         btnLayout = QHBoxLayout()
-
-        self.refresh_btn = QPushButton("Refresh")
-        self.refresh_btn.clicked.connect(self.load_table)
 
         self.delete_btn = QPushButton("Delete")
         self.delete_btn.clicked.connect(self.delete_selected)
@@ -24,7 +23,6 @@ class StudentTable(QWidget):
         self.edit_btn.clicked.connect(self.edit_selected)
         self.edit_btn.hide()
 
-        btnLayout.addWidget(self.refresh_btn)
         btnLayout.addWidget(self.edit_btn)
         btnLayout.addWidget(self.delete_btn)
         btnLayout.addStretch()
@@ -35,8 +33,8 @@ class StudentTable(QWidget):
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels([
             "Student ID", 
-            "Last Name", 
             "First Name", 
+            "Last Name", 
             "Gender", 
             "Program", 
             "Year"
@@ -81,7 +79,7 @@ class StudentTable(QWidget):
 
         confirm = QMessageBox.question(
             self, "Delete Student",
-            f"Are you sure you want to delete <b>{student_id}<b>?<br><br>"
+            f"Are you sure you want to delete <b>{student_id}</b>?<br><br>"
         )
 
         if confirm == QMessageBox.Yes:
@@ -103,5 +101,5 @@ class StudentTable(QWidget):
 
         from UserView.Student_Info.student_edit import EditStudentDialog
         dialog = EditStudentDialog(student_id, self)
+        dialog.student_updated.connect(self.load_table)
         dialog.exec()
-        self.load_table()

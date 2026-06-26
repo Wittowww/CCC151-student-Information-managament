@@ -1,17 +1,18 @@
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QVBoxLayout, QPushButton, QFormLayout, QLabel, QMessageBox, QComboBox
 )
-
+from PySide6.QtCore import Signal
 from Logics.CSV_handler import add_student, load_programs, load_colleges
 
 #for now
 class AddStudentDialog(QDialog):
+    student_added = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Add Student")
         self.setFixedSize(500, 400)
         self.setup_ui()
-        self.show()
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
@@ -124,10 +125,15 @@ class AddStudentDialog(QDialog):
             QMessageBox.warning(self, "Input Error", "Please fill in all fields.")
             return
 
-        add_student(students)
-        QMessageBox.information(self, "Success", "Student added successfully!")
-        self.clear_inputs()
-        self.close()
+        result = add_student(students)
+
+        if result:
+            QMessageBox.information(self, "Success", "Student added successfully!")
+            self.student_added.emit()
+            self.clear_inputs()
+            self.close()
+        else:
+            QMessageBox.warning(self, "Error", f"Student ID '{students['Student ID']}' already exists!")
 
     def clear_inputs(self):
             self.studentID_input.clear()

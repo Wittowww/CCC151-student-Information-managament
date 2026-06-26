@@ -1,9 +1,13 @@
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QPushButton, QVBoxLayout, QFormLayout, QMessageBox
 )
+from PySide6.QtCore import Signal
 from Logics.CSV_handler import get_college, update_college
+from Logics.AppSignals import app_signals
 
 class EditCollegeDialog(QDialog):
+    college_updated = Signal()
+
     def __init__(self, college_code, parent=None):
         super().__init__(parent)
         self.college_code = college_code
@@ -18,7 +22,6 @@ class EditCollegeDialog(QDialog):
         college_Form = QFormLayout()
 
         self.collegeCode_input = QLineEdit()
-        self.collegeCode_input.setReadOnly(True)  # ID cannot be changed
         self.collegeName_input = QLineEdit()
 
         college_Form.addRow("College Code:", self.collegeCode_input)
@@ -58,10 +61,12 @@ class EditCollegeDialog(QDialog):
             QMessageBox.warning(self, "Error", "Please fill in all fields.")
             return
 
-        result = update_college(updated)
+        result = update_college(self.college_code, updated)
 
         if result:
             QMessageBox.information(self, "Success", "College updated successfully!")
+            self.college_updated.emit()
+            app_signals.data_changed.emit()
             self.close()
         else:
             QMessageBox.warning(self, "Error", "College not found!")

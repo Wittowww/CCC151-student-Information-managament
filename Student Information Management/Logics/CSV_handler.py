@@ -38,23 +38,49 @@ def load_colleges():
         return list(reader)
     
 def add_college(college: dict):
+    colleges = load_colleges()
+
+    for c in colleges:
+        if c["College Code"].lower() == college["College Code"].lower():
+            return False
+
     with open(college_File, mode='a', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=college_Fields)
         writer.writerow(college)
+    return True
 
-def update_college(updated: dict):
+def update_college(old_code:str,updated: dict):
     colleges = load_colleges()
     found = False
+    new_code = updated["College Code"]
+
+    if old_code != new_code:
+        for c in colleges:
+            if c["College Code"] != old_code and c["College Code"].lower() == new_code.lower():
+                return False
+            
     for i, college in enumerate(colleges):
-        if college["College Code"] == updated["College Code"]:
-            colleges[i] = updated
-            found = True
-            break
-    if found:
-        save_colleges(colleges)
-        return True
-    else:
+            if college["College Code"] == old_code:
+                colleges[i] = updated
+                found = True
+                break
+
+    if not found:
         return False
+    
+    save_colleges(colleges)
+
+    if old_code != new_code:
+        programs = load_programs()
+        changed = False
+        for p in programs:
+            if p["College Code"] == old_code:
+                p["College Code"] = new_code
+                changed = True
+        if changed:
+            save_programs(programs)
+
+    return True
     
 def delete_college(college_code: str):
     colleges = load_colleges()
@@ -67,11 +93,11 @@ def delete_college(college_code: str):
     filtered_program = [p for p in programs if p["College Code"] != college_code]
     save_programs(filtered_program)
 
-    student = load_students()
-    for student in student:
+    students = load_students()
+    for student in students:
         if student["Program Code"] in delete_programCode:
             student["Program Code"] = "N/A"
-    save_students(student)
+    save_students(students)
     
     save_colleges(colfiltered)
     return True
@@ -108,9 +134,16 @@ def load_programs():
         return list(reader)    
     
 def add_program(program: dict):
+    programs = load_programs()
+
+    for p in programs:
+        if p["Program Code"].lower() == program["Program Code"].lower():
+            return False 
+        
     with open(program_File, mode='a', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=program_Fields)
         writer.writerow(program)
+    return True
 
 def save_programs(program: list):
     with open(program_File, mode='w', newline='') as file:
@@ -118,20 +151,38 @@ def save_programs(program: list):
         writer.writeheader()
         writer.writerows(program)
 
-def update_program(updated: dict):
+def update_program(old_code: str, updated: dict):
     programs = load_programs()
     found = False
+    new_code = updated["Program Code"]
+
+    if old_code != new_code:
+        for p in programs:
+            if p["Program Code"] != old_code and p["Program Code"].lower() == new_code.lower():
+                return False
 
     for i, program in enumerate(programs):
-        if program["Program Code"] == updated["Program Code"]:
+        if program["Program Code"] == old_code:
             programs[i] = updated
             found = True
             break
-    if found:
-        save_programs(programs)
-        return True
-    else:
-        return False  
+
+    if not found:
+        return False
+
+    save_programs(programs) 
+
+    if old_code != new_code:
+        students = load_students()
+        changed = False
+        for s in students:
+            if s["Program Code"] == old_code:
+                s["Program Code"] = new_code
+                changed = True
+        if changed:
+            save_students(students)
+
+    return True
      
 def delete_program(program_code: str):
     programs = load_programs()
@@ -175,9 +226,16 @@ def load_students():
         return list(reader)
     
 def add_student(student: dict):
+    students = load_students()
+
+    for s in students:
+        if s["Student ID"].lower() == student["Student ID"].lower():
+            return False
+
     with open(student_File, mode='a', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=student_Fields)
         writer.writerow(student)
+    return True
 
 def update_student(updated: dict):
     students = load_students()

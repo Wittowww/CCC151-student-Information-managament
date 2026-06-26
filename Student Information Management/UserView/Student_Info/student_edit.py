@@ -1,9 +1,12 @@
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QPushButton, QVBoxLayout, QFormLayout, QMessageBox, QComboBox
 )
+from PySide6.QtCore import Signal
 from Logics.CSV_handler import get_student, update_student, load_programs, load_colleges
 
 class EditStudentDialog(QDialog):
+    student_updated = Signal()
+
     def __init__(self, student_id, parent=None):
         super().__init__(parent)
         self.student_id = student_id
@@ -145,6 +148,7 @@ class EditStudentDialog(QDialog):
 
         if result:
             QMessageBox.information(self, "Success", "Student updated successfully!")
+            self.student_updated.emit()
             self.close()
         else:
             QMessageBox.warning(self, "Error", "Student not found!")

@@ -1,9 +1,13 @@
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QPushButton, QVBoxLayout, QFormLayout, QMessageBox, QComboBox
 )
+from PySide6.QtCore import Signal
 from Logics.CSV_handler import get_program, update_program, load_colleges
+from Logics.AppSignals import app_signals
 
 class EditProgramDialog(QDialog):
+    program_updated = Signal()
+
     def __init__(self, program_id, parent=None):
         super().__init__(parent)
         self.program_id = program_id
@@ -18,7 +22,6 @@ class EditProgramDialog(QDialog):
         program_Form = QFormLayout()
 
         self.programCode_input = QLineEdit()
-        self.programCode_input.setReadOnly(True)  # ID cannot be changed
         self.programName_input = QLineEdit()
 
         # college dropdown
@@ -76,10 +79,12 @@ class EditProgramDialog(QDialog):
             QMessageBox.warning(self, "Error", "Please fill in all fields.")
             return
 
-        result = update_program(updated)
+        result = update_program(self.program_id, updated)
 
         if result:
             QMessageBox.information(self, "Success", "Program updated successfully!")
+            self.program_updated.emit()
+            app_signals.data_changed.emit()
             self.close()
         else:
             QMessageBox.warning(self, "Error", "Program not found!")

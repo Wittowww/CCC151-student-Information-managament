@@ -1,15 +1,17 @@
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QPushButton, QVBoxLayout, QFormLayout, QMessageBox, QComboBox
 )
+from PySide6.QtCore import Signal
 from Logics.CSV_handler import add_program, load_colleges
 
 class AddProgramDialog(QDialog):
+    program_added = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Add Program")
         self.setFixedSize(500, 300)
         self.setup_ui()
-        self.show()
 
     def setup_ui(self):
         layout = QVBoxLayout()
@@ -61,10 +63,15 @@ class AddProgramDialog(QDialog):
             QMessageBox.warning(self, "Error", "Please fill in all fields.")
             return
 
-        add_program(program)
-        QMessageBox.information(self, "Success", "Program added successfully!")
-        self.clear_inputs()
-        self.close()
+        result = add_program(program)
+
+        if result:
+            QMessageBox.information(self, "Success", "Program added successfully!")
+            self.program_added.emit()
+            self.clear_inputs()
+            self.close()
+        else:
+             QMessageBox.warning(self, "Error", f"Program Code '{program['Program Code']}' already exists!")
 
     def clear_inputs(self):
         self.programCode_input.clear()

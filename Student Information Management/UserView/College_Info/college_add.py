@@ -1,15 +1,17 @@
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QPushButton, QVBoxLayout, QFormLayout, QMessageBox
 )
+from PySide6.QtCore import Signal
 from Logics.CSV_handler import add_college
 
 class AddCollegeDialog(QDialog):
+    college_added = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Add College")
         self.setFixedSize(500, 300)
         self.setup_ui()
-        self.show()
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
@@ -47,10 +49,18 @@ class AddCollegeDialog(QDialog):
             QMessageBox.warning(self, "Error", "Please fill in all fields.")
             return
 
-        add_college(college)
-        QMessageBox.information(self, "Success", "College added successfully!")
-        self.clear_inputs()
-        self.close()
+        result = add_college(college)
+        print(f"add_college returned: {result}") 
+
+        if result:
+            print("About to emit signal!")
+            print("Emitting college_added signal!")
+            QMessageBox.information(self, "Success", "College added successfully!")
+            self.college_added.emit()
+            self.clear_inputs()
+            self.close()
+        else:
+            QMessageBox.warning(self, "Error", f"College Code '{college['College Code']}' already exists!")
 
     def clear_inputs(self):
         self.collegeCode_input.clear()
