@@ -26,8 +26,8 @@ class mainApp(QMainWindow):
     SORT_OPTIONS = {
     0: [  # Student Table
         ("Sort by Student ID",   0),
-        ("Sort by Last Name",    1),
-        ("Sort by First Name",   2),
+        ("Sort by First Name",   1),
+        ("Sort by Last Name",    2),
         ("Sort by Gender",       3),
         ("Sort by Program Code", 4),
         ("Sort by Year",         5),
@@ -37,9 +37,9 @@ class mainApp(QMainWindow):
         ("Sort by College Name", 1),
     ],
     2: [  # Program Table
-        ("Sort by Program Code", 0),
-        ("Sort by Program Name", 1),
-        ("Sort by College Code", 2),
+        ("Sort by College Code", 0),
+        ("Sort by Program Code", 1),
+        ("Sort by Program Name", 2),
     ],
 }
 
