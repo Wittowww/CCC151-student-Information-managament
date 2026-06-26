@@ -47,14 +47,15 @@ BAPan,Batsilyer ng Sining sa Panitikan,CASS
 BAHis,Bachelor of Arts in History,CASS
 BALCS,Bachelor of Arts in Literary and Cultural Studies,CASS
 BAFil,Batsilyer ng Sining sa Filipino,CASS
-BSN,Bachelor of Science in Nursing,CHS
 BSA,Bachelor of Science in Accountancy,CEBA
 BSBA-BE,Bachelor of Science in Business Administration Major in Business Economics,CEBA
 BSBA-MM,Bachelor of Science in Business Administration Major in Marketing Management,CEBA
 BSHM,Bachelor of Science in Hospitality Management,CEBA
 BSEcon,Bachelor of Science in Economics,CEBA
 BSEntrep,Bachelor of Science in Entrepreneurship,CEBA
-BSCS,Bachelor of Science in Computer Science,SCS
-BSIT,Bachelor of Science in Information Technology,SCS
-BSIS,Bachelor of Science in Information System,SCS
-BSCA,Bachelor of Science in Computer Application,SCS
+BSCS,Bachelor of Science in Computer Science,CCS
+BSIT,Bachelor of Science in Information Technology,CCS
+BSIS,Bachelor of Science in Information System,CCS
+BSCA,Bachelor of Science in Computer Application,CCS
+BSN,Bachelor of Science in Nursing,CHS
+BSMT,Bachelor of Science in Medical Technology,CHS

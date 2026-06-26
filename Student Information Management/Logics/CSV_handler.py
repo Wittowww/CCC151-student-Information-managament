@@ -237,14 +237,22 @@ def add_student(student: dict):
         writer.writerow(student)
     return True
 
-def update_student(updated: dict):
+def update_student(old_id: str,updated: dict):
     students = load_students()
     found = False
+    new_id = updated["Student ID"]
+
+    if old_id != new_id:
+        for s in students:
+            if s["Student ID"] != old_id and s["Student ID"].lower() == new_id.lower():
+                return False
+
     for i, student in enumerate(students):
-        if student["Student ID"] == updated["Student ID"]:
+        if student["Student ID"] == old_id:
             students[i] = updated
             found = True
             break
+
     if found:
         save_students(students)
         return True

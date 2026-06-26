@@ -1,3 +1,5 @@
+import re 
+
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QVBoxLayout, QPushButton, QFormLayout, QLabel, QMessageBox, QComboBox
 )
@@ -124,6 +126,13 @@ class AddStudentDialog(QDialog):
         if any (v == "" for v in list(students.values())[:-1]):
             QMessageBox.warning(self, "Input Error", "Please fill in all fields.")
             return
+        
+        if not re.fullmatch(r"\d{4}-\d{4}", students["Student ID"]):
+            QMessageBox.warning(
+                self, "Input Error",
+                "Student ID must be in the format YYYY-NNNN (e.g. 2023-0001)."
+            )
+            return
 
         result = add_student(students)
 
@@ -143,4 +152,3 @@ class AddStudentDialog(QDialog):
             self.studentYear_input.clear()
             self.program_input.setCurrentIndex(0)
             self.college_input.setCurrentIndex(0)
-

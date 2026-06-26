@@ -1,8 +1,11 @@
+import re
+
 from PySide6.QtWidgets import (
     QDialog, QLineEdit, QPushButton, QVBoxLayout, QFormLayout, QMessageBox, QComboBox
 )
 from PySide6.QtCore import Signal
 from Logics.CSV_handler import get_student, update_student, load_programs, load_colleges
+from Logics.AppSignals import app_signals 
 
 class EditStudentDialog(QDialog):
     student_updated = Signal()
@@ -21,7 +24,6 @@ class EditStudentDialog(QDialog):
         student_Form = QFormLayout()
 
         self.studentID_input = QLineEdit()
-        self.studentID_input.setReadOnly(True)  # ID cannot be changed
         self.studentFirstName_input = QLineEdit()
         self.studentLastName_input = QLineEdit()
         self.studentYear_input = QLineEdit()
@@ -143,8 +145,15 @@ class EditStudentDialog(QDialog):
         if any(v.strip() == "" for v in list(updated.values())[:-1]):
             QMessageBox.warning(self, "Error", "Please fill in all fields.")
             return
+        
+        if not re.fullmatch(r"\d{4}-\d{4}", updated["Student ID"]):
+            QMessageBox.warning(
+                self, "Input Error",
+                "Student ID must be in the format YYYY-NNNN (e.g. 2023-0001)."
+            )
+            return
 
-        result = update_student(updated)
+        result = update_student(self.student_id, updated)
 
         if result:
             QMessageBox.information(self, "Success", "Student updated successfully!")
