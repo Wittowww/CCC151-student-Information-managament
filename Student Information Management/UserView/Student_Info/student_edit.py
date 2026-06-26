@@ -116,10 +116,19 @@ class EditStudentDialog(QDialog):
             self.studentGender_input.setCurrentText(student["Gender"])
             self.studentYear_input.setText(student["Year"])
 
-            
-            index = self.program_input.findData(student["Program Code"])
-            if index >= 0:
-                self.program_input.setCurrentIndex(index)
+            programs = load_programs()
+            student_program = next(
+                (p for p in programs if p["Program Code"] == student["Program Code"]), None
+            )
+
+            if student_program:
+                college_index = self.college_input.findData(student_program["College Code"])
+                if college_index >= 0:
+                    self.college_input.setCurrentIndex(college_index)
+
+            program_index = self.program_input.findData(student["Program Code"])
+            if program_index >= 0:
+                self.program_input.setCurrentIndex(program_index)
         else:
             QMessageBox.warning(self, "Error", "Student not found!")
             self.close()
